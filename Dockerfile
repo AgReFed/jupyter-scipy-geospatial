@@ -1,7 +1,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 # Copyright 2022 AgReFed
-ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.4.0
+ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.5.2
 FROM $BASE_CONTAINER
 
 LABEL maintainer="AgReFed <r.archer@federation.edu.au>"
@@ -16,10 +16,11 @@ LABEL maintainer="AgReFed <r.archer@federation.edu.au>"
 USER root
 
 # install software-properties-common to enable add-apt-repository command
-# install ubuntugis PPA, unstable required for 20.04 LTS packages.
+# install ubuntugis PPA, unstable required for 22.04 LTS packages.
 # install required packages
 # clean up
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install software-properties-common -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
     apt-get update && \
@@ -28,11 +29,15 @@ RUN apt-get update && \
 #    lftp \
 #    libproj-dev \
 #    libgdal-dev \
+    liblerc3 \
+#    liblerc-dev \
     gdal-bin \
     proj-bin \
     proj-data && \
     apt-get remove pkg-config -y && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    fix-permissions "/home/${NB_USER}" && \
+    chown -R "${NB_USER}" "/home/${NB_USER}/.launchpadlib"
 
 USER $NB_UID
 
@@ -44,6 +49,34 @@ RUN arch=$(uname -m) && \
     fi && \
     # mamba install --quiet --yes \
     mamba install --yes \
+    plotly_express \
+    netcdf4 \
+    basemap \
+    ipywidgets==7.6.5 \
+    google-cloud-sdk \
+    pyreadr \
+    schema \
+    termcolor \
+    alive-progress \
+    colour \
+    ee_extra \
+    eemont \
+    gdown \
+    geeadd \
+    geedim \
+    geemap \
+    geocoder \
+    geojson \
+    grapheme \
+    ipyfilechooser \
+    jupyter_server \
+    odc-stac \
+    papermill \
+    pystac \
+    pystac-client \
+    rich \
+    twine \
+    wxee \
     aiohttp \
     black \
     boto3 \
@@ -87,11 +120,13 @@ RUN arch=$(uname -m) && \
     xarray \
     xarray-spatial \
     zarr && \
+    mamba list --quiet && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
+    fix-permissions "/home/${NB_USER}" && \
+    ls -al "/home/${NB_USER}"
 
-RUN pip install dea-tools odc-ui p2j xicor && \
+RUN pip install dea-tools odc-ui p2j selectio xicor && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
