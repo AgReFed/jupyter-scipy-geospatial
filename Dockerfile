@@ -1,7 +1,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 # Copyright 2022 AgReFed
-ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.3.2
+ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.4.0
 FROM $BASE_CONTAINER
 
 LABEL maintainer="AgReFed <r.archer@federation.edu.au>"
@@ -19,9 +19,11 @@ USER root
 # install ubuntugis PPA, unstable required for 20.04 LTS packages.
 # install required packages
 # clean up
-RUN apt-get update && apt-get install software-properties-common -y && \
+RUN apt-get update && \
+    apt-get install software-properties-common -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
-    apt-get update && apt-get install --no-install-recommends -y \
+    apt-get update && \
+    apt-get install --no-install-recommends -y \
     unrar \
 #    lftp \
 #    libproj-dev \
@@ -34,7 +36,14 @@ RUN apt-get update && apt-get install software-properties-common -y && \
 
 USER $NB_UID
 
-RUN mamba install --yes \
+RUN arch=$(uname -m) && \
+    if [ "${arch}" == "aarch64" ]; then \
+        # Prevent libmamba from sporadically hanging on arm64 under QEMU
+        # <https://github.com/mamba-org/mamba/issues/1611>
+        export G_SLICE=always-malloc; \
+    fi && \
+    # mamba install --quiet --yes \
+    mamba install --yes \
     aiohttp \
     black \
     boto3 \
@@ -57,7 +66,6 @@ RUN mamba install --yes \
     jupyter-ui-poll \
     loguru \
     lxml \
-    nbgitpuller \
     nltk \
     noise \
     odc-algo \
