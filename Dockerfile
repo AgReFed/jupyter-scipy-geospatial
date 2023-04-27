@@ -1,6 +1,6 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-# Copyright 2022 AgReFed
+# Copyright 2023 AgReFed
 ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.5.2
 FROM $BASE_CONTAINER
 
@@ -20,7 +20,7 @@ USER root
 # install required packages
 # clean up
 RUN apt-get update && \
-    apt-get upgrade -y && \
+#    apt-get upgrade -y && \
     apt-get install software-properties-common -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
     apt-get update && \
@@ -47,12 +47,11 @@ RUN arch=$(uname -m) && \
         # <https://github.com/mamba-org/mamba/issues/1611>
         export G_SLICE=always-malloc; \
     fi && \
-    # mamba install --quiet --yes \
     mamba install --yes \
     plotly_express \
     netcdf4 \
     basemap \
-    ipywidgets==7.6.5 \
+    ipywidgets \
     google-cloud-sdk \
     pyreadr \
     schema \
