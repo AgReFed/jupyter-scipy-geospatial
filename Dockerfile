@@ -1,7 +1,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 # Copyright 2023 AgReFed
-ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.5.2
+ARG BASE_CONTAINER=jupyter/scipy-notebook:lab-3.5.3
 FROM $BASE_CONTAINER
 
 LABEL maintainer="AgReFed <r.archer@federation.edu.au>"
@@ -24,7 +24,8 @@ RUN apt-get update && \
     apt-get install software-properties-common -y && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
     apt-get update && \
-    apt-get install --no-install-recommends -y \
+    apt-get install --no-install-recommends --yes \
+    rclone \
     unrar \
 #    lftp \
 #    libproj-dev \
